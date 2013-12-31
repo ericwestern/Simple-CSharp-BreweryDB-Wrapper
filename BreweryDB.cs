@@ -9,23 +9,29 @@ namespace Simple_BreweryDB_Wrapper
 {
     public class BreweryDB
     {
-        const string baseUrl = "http://api.brewerydb.com/v2/";
-        private string apiKey, endpoint, responseFormat;
+        private const string baseUrl = "http://api.brewerydb.com/v2/";
+        private string apiKey, endpoint, responseFormat, method;
         Dictionary<string, string> parameters = new Dictionary<string,string>();
 
         public BreweryDB(string key, string format)
         {
             this.apiKey = key;
             if (format == null)
-                responseFormat = "json";
+                this.responseFormat = "json";
             else
-                responseFormat = format;
+                this.responseFormat = format;
         }
 
         public string Endpoint
         {
             get { return this.endpoint; }
             set { this.endpoint = value; }
+        }
+
+        public string Method
+        {
+            get { return this.method; }
+            set { this.method = value; }
         }
 
         public Dictionary<string, string> Parameters
@@ -61,8 +67,9 @@ namespace Simple_BreweryDB_Wrapper
             string urlRequest = urlRequestBuilder.ToString();
 
             WebRequest request = WebRequest.Create(urlRequest);
+            request.Method = this.method;
             WebResponse response = request.GetResponse();
-
+            
             StreamReader reader = new StreamReader(response.GetResponseStream());
             string results = reader.ReadToEnd();
             return results;
