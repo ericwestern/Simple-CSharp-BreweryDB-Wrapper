@@ -10,28 +10,20 @@ namespace Simple_BreweryDB_Wrapper
     public class BreweryDB
     {
         private const string baseUrl = "http://api.brewerydb.com/v2/";
-        private string apiKey, endpoint, responseFormat, method;
-        Dictionary<string, string> parameters = new Dictionary<string,string>();
+        private string apiKey, endpoint, responseFormat, webMethod;
+        Dictionary<string, string> parameters = null;
 
-        public BreweryDB(string key, string format)
+        public BreweryDB(string key, string format = "json", string method = "GET")
         {
             this.apiKey = key;
-            if (format == null)
-                this.responseFormat = "json";
-            else
-                this.responseFormat = format;
+            this.responseFormat = format;
+            this.webMethod = method;
         }
 
         public string Endpoint
         {
             get { return this.endpoint; }
             set { this.endpoint = value; }
-        }
-
-        public string Method
-        {
-            get { return this.method; }
-            set { this.method = value; }
         }
 
         public Dictionary<string, string> Parameters
@@ -46,12 +38,15 @@ namespace Simple_BreweryDB_Wrapper
             StringBuilder urlRequestBuilder = new StringBuilder(baseUrl);
             urlRequestBuilder.Append(this.endpoint);
             urlRequestBuilder.Append("?");
-            foreach (KeyValuePair<string, string> parameter in this.parameters)
+            if (this.parameters != null)
             {
-                urlRequestBuilder.Append(parameter.Key);
-                urlRequestBuilder.Append("=");
-                urlRequestBuilder.Append(parameter.Value);
-                urlRequestBuilder.Append("&");
+                foreach (KeyValuePair<string, string> parameter in this.parameters)
+                {
+                    urlRequestBuilder.Append(parameter.Key);
+                    urlRequestBuilder.Append("=");
+                    urlRequestBuilder.Append(parameter.Value);
+                    urlRequestBuilder.Append("&");
+                }
             }
             if (page != null)
             {
@@ -67,12 +62,23 @@ namespace Simple_BreweryDB_Wrapper
             string urlRequest = urlRequestBuilder.ToString();
 
             WebRequest request = WebRequest.Create(urlRequest);
-            request.Method = this.method;
+            request.Method = this.webMethod;
             WebResponse response = request.GetResponse();
             
             StreamReader reader = new StreamReader(response.GetResponseStream());
             string results = reader.ReadToEnd();
             return results;
+        }
+
+        public string DirectCallById(string id)
+        {
+            StringBuilder urlRequestBuilder = new StringBuilder(baseUrl);
+            urlRequestBuilder.Append(this.endpoint);
+            urlRequestBuilder.Append("/");
+            urlRequestBuilder.Append(id);
+            urlRequestBuilder.Append("&key=");
+            urlRequestBuilder.Append(apiKey);
+            string urlRequest = urlRequestBuilder.ToString();
         }
     }
 }
