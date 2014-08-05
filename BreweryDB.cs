@@ -10,14 +10,13 @@ namespace Simple_BreweryDB_Wrapper
     public class BreweryDB
     {
         private const string baseUrl = "http://api.brewerydb.com/v2/";
-        private string apiKey, endpoint, responseFormat, webMethod;
+        private string apiKey, endpoint, responseFormat;
         Dictionary<string, string> parameters = null;
 
-        public BreweryDB(string key, string format = "json", string method = "GET")
+        public BreweryDB(string key, string format)
         {
             this.apiKey = key;
             this.responseFormat = format;
-            this.webMethod = method;
         }
 
         public string Endpoint
@@ -61,13 +60,7 @@ namespace Simple_BreweryDB_Wrapper
             urlRequestBuilder.Append(apiKey);
             string urlRequest = urlRequestBuilder.ToString();
 
-            WebRequest request = WebRequest.Create(urlRequest);
-            request.Method = this.webMethod;
-            WebResponse response = request.GetResponse();
-            
-            StreamReader reader = new StreamReader(response.GetResponseStream());
-            string results = reader.ReadToEnd();
-            return results;
+            return BreweryDbResponse(urlRequest, "GET");
         }
 
         public string DirectCallById(string id)
@@ -79,6 +72,18 @@ namespace Simple_BreweryDB_Wrapper
             urlRequestBuilder.Append("&key=");
             urlRequestBuilder.Append(apiKey);
             string urlRequest = urlRequestBuilder.ToString();
+            return BreweryDbResponse(urlRequest, "GET");
+        }
+
+        private string BreweryDbResponse(string url, string webMethod)
+        {
+            WebRequest request = WebRequest.Create(url);
+            request.Method = webMethod;
+            WebResponse response = request.GetResponse();
+
+            StreamReader reader = new StreamReader(response.GetResponseStream());
+            string results = reader.ReadToEnd();
+            return results;
         }
     }
 }
