@@ -7,7 +7,7 @@ Currently only working with GET requests.
 
 Example:
 ```csharp
-string key = "bb8642292705a51ea7022ef4b28968aa";
+string key = "################################";
 string format = "json";
 BreweryDB target = new BreweryDB(key, format);
 target.Endpoint = "beer";
