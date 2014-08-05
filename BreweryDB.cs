@@ -11,7 +11,6 @@ namespace Simple_BreweryDB_Wrapper
     {
         private const string baseUrl = "http://api.brewerydb.com/v2/";
         private string apiKey, endpoint, responseFormat;
-        Dictionary<string, string> parameters = null;
 
         public BreweryDB(string key, string format)
         {
@@ -25,33 +24,21 @@ namespace Simple_BreweryDB_Wrapper
             set { this.endpoint = value; }
         }
 
-        public Dictionary<string, string> Parameters
-        {
-            get { return this.parameters; }
-            set { this.parameters = value; }
-        }
 
-
-        public string ExecuteGetCall(string page)
+        public string ExecuteGetCall(Dictionary<string, string> parameters)
         {
             StringBuilder urlRequestBuilder = new StringBuilder(baseUrl);
             urlRequestBuilder.Append(this.endpoint);
             urlRequestBuilder.Append("?");
-            if (this.parameters != null)
+            if (parameters != null)
             {
-                foreach (KeyValuePair<string, string> parameter in this.parameters)
+                foreach (KeyValuePair<string, string> parameter in parameters)
                 {
                     urlRequestBuilder.Append(parameter.Key);
                     urlRequestBuilder.Append("=");
                     urlRequestBuilder.Append(parameter.Value);
                     urlRequestBuilder.Append("&");
                 }
-            }
-            if (page != null)
-            {
-                urlRequestBuilder.Append("p=");
-                urlRequestBuilder.Append(page);
-                urlRequestBuilder.Append("&");
             }
 
             urlRequestBuilder.Append("format=");
@@ -63,13 +50,24 @@ namespace Simple_BreweryDB_Wrapper
             return BreweryDbResponse(urlRequest, "GET");
         }
 
-        public string DirectCallById(string id)
+        public string DirectCallById(string id, Dictionary<string, string> parameters)
         {
             StringBuilder urlRequestBuilder = new StringBuilder(baseUrl);
             urlRequestBuilder.Append(this.endpoint);
             urlRequestBuilder.Append("/");
             urlRequestBuilder.Append(id);
-            urlRequestBuilder.Append("&key=");
+            urlRequestBuilder.Append("?");
+            if (parameters != null)
+            {
+                foreach (KeyValuePair<string, string> parameter in parameters)
+                {
+                    urlRequestBuilder.Append(parameter.Key);
+                    urlRequestBuilder.Append("=");
+                    urlRequestBuilder.Append(parameter.Value);
+                    urlRequestBuilder.Append("&");
+                }
+            }
+            urlRequestBuilder.Append("key=");
             urlRequestBuilder.Append(apiKey);
             string urlRequest = urlRequestBuilder.ToString();
             return BreweryDbResponse(urlRequest, "GET");
